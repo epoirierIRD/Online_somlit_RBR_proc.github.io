@@ -1,55 +1,63 @@
 import streamlit as st
-import pandas as pd
-import matplotlib.pyplot as plt
-import io
+import tempfile
 import zipfile
+import os
+from process_rbr import process_rbr_file  # your script function
 
-# --- Page title ---
-st.title("My Data Processing Web App")
+st.title("RSK/RBR File Processor")
 
-# --- File uploads ---
-uploaded_files = st.file_uploader("Upload data files", type=["csv", "txt"], accept_multiple_files=True)
+# --- File upload ---
+uploaded_file = st.file_uploader("Upload RSK/RBR file", type=["rsk", "rbr"])
 
-# --- Options for the script ---
-option = st.radio("Choose processing method:", ["Method A", "Method B", "Method C"])
+# --- Manual inputs ---
+site_id = st.text_input("Site ID")
+atmospheric_pressure = st.number_input("Atmospheric Pressure (dbar)", min_value=0.0)
+pressure_threshold = st.number_input("Pressure Threshold", min_value=0.0)
+conductivity_threshold = st.number_input("Conductivity Threshold", min_value=0.0)
 
-# --- Button to run script ---
-if st.button("Process Files"):
-    if not uploaded_files:
-        st.error("Please upload at least one file!")
+# --- Process button ---
+if st.button("Process File"):
+    if not uploaded_file:
+        st.error("Please upload a file first!")
+    elif not site_id:
+        st.error("Please enter Site ID")
     else:
-        # Create a zip file to store processed results
-        zip_buffer = io.BytesIO()
-        with zipfile.ZipFile(zip_buffer, "a", zipfile.ZIP_DEFLATED, False) as zip_file:
-            for file in uploaded_files:
-                try:
-                    # Example: read CSV
-                    df = pd.read_csv(file)
-                    
-                    # Example processing depending on option
-                    if option == "Method A":
-                        df_processed = df.describe()
-                    elif option == "Method B":
-                        df_processed = df  # Replace with your real method
-                    else:
-                        df_processed = df.cumsum()
-                    
-                    # Save processed CSV to zip
-                    csv_bytes = df_processed.to_csv(index=False).encode("utf-8")
-                    zip_file.writestr(f"processed_{file.name}", csv_bytes)
-                    
-                    # Plot example figure
-                    st.subheader(f"Plot for {file.name}")
-                    fig, ax = plt.subplots()
-                    df_processed.hist(ax=ax)
-                    st.pyplot(fig)
-                except Exception as e:
-                    st.error(f"Error processing {file.name}: {e}")
+        try:
+            # Create temporary directory to store input & outputs
+            with tempfile.TemporaryDirectory() as tmpdir:
+                # Save uploaded file
+                tmp_path = os.path.join(tmpdir, uploaded_file.name)
+                with open(tmp_path, "wb") as f:
+                    f.write(uploaded_file.read())
+                
+                # Call your processing function
+                # Replace with your actual script call
+                # The function should return a folder path with all outputs
+                output_folder = process_rbr_file(
+                    file_path=tmp_path,
+                    site_id=site_id,
+                    atmospheric_pressure=atmospheric_pressure,
+                    pressure_threshold=pressure_threshold,
+                    conductivity_threshold=conductivity_threshold,
+                    output_dir=tmpdir
+                )
+                
+                # Create a zip file of all outputs
+                zip_path = os.path.join(tmpdir, "processed_output.zip")
+                with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as zipf:
+                    for root, _, files in os.walk(output_folder):
+                        for file in files:
+                            zipf.write(os.path.join(root, file), arcname=file)
+                
+                # Provide download button
+                with open(zip_path, "rb") as f:
+                    st.download_button(
+                        label="Download Processed Output",
+                        data=f,
+                        file_name="processed_output.zip",
+                        mime="application/zip"
+                    )
+                st.success("Processing complete!")
 
-        # Provide download link for zip
-        st.download_button(
-            label="Download all processed files",
-            data=zip_buffer.getvalue(),
-            file_name="processed_files.zip",
-            mime="application/zip"
-        )
+        except Exception as e:
+            st.error(f"Error processing file: {e}")
