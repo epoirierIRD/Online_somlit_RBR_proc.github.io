@@ -1,4 +1,7 @@
 streamlit
 pandas
 matplotlib
+zipfile
+os
+tempfile
 
