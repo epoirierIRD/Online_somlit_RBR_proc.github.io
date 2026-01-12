@@ -70,7 +70,7 @@ if st.button("Process File"):
                 # Create a zip file of all outputs
                 zip_path = os.path.join(tmpdir, "processed_output.zip")
                 with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as zipf:
-                    for root, _, files in os.walk("proc_data"):
+                    for root, _, files in os.walk(proc_data_dir):
                         for file in files:
                             zipf.write(os.path.join(root, file), arcname=file)
                 
