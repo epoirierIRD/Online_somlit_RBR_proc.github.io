@@ -72,7 +72,10 @@ if st.button("Process File"):
                 with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as zipf:
                     for root, _, files in os.walk(proc_data_dir):
                         for file in files:
-                            zipf.write(os.path.join(root, file), arcname=file)
+                            full_path = os.path.join(root, file)
+                            # Make arcname relative to proc_data_dir
+                            arcname = os.path.relpath(full_path, proc_data_dir)
+                            zipf.write(full_path, arcname=arcname)
                 
                 # Provide download button
                 with open(zip_path, "rb") as f:
