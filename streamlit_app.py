@@ -398,6 +398,8 @@ st.markdown(
         <strong>Contact:</strong> Etienne Poirier (IRD - IUEM) &nbsp;|&nbsp;
         <a href='mailto:etienne.poirier@ird.fr' style='color:white;'>etienne.poirier@ird.fr</a> &nbsp;|&nbsp;
         <a href='https://github.com/epoirierIRD/Online_somlit_RBR_proc.github.io' target='_blank' style='color:white;'>GitHub</a>
+        <div style="margin-top: 5px;">
+        <strong>Contributors:</strong> Emilie Grossteffan, Peggy Rimmelin-Maury
     </div>
     """,
     unsafe_allow_html=True
