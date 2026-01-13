@@ -20,6 +20,7 @@ import base64
 import shutil
 
 import RSKsomlit_proc as rsksproc
+from sites import sites
 
 # function to deal with duplicate files given in upload widget
 def deduplicate_by_filename(uploaded_files):
@@ -160,11 +161,31 @@ if uploaded_files_raw:
 if uploaded_files:
     st.markdown("---")
     st.subheader("Processing Parameters")
+   
+    # Define widget with station names        
+    # Build the dropdown options: station names
+    # It remembers the last choice
+    station_names = [s["station"] for s in sites]
     
-    # Site-ID dropdown with location of the Somlit station
-    site_options = {"Plouzané":5,"La Rochelle": 1, "Roscoff": 2, "Arcachon": 3, "Wimereux": 4}
-    selected_site = st.selectbox("SOMLIT Station", options=list(site_options.keys()))
-    site_id = site_options[selected_site]  # integer used internally
+        # Initialize session state for station if not already set
+    if "selected_station" not in st.session_state:
+        st.session_state.selected_station = "Brest"  # default first station
+    
+    # Streamlit selectbox with session state
+    selected_station = st.selectbox(
+        "SOMLIT Station",
+        options=station_names,
+        index=station_names.index(st.session_state.selected_station),
+        key="selected_station"  # binds to session_state
+    )
+    
+    # Get corresponding site_id
+    site_id = next(s["id"] for s in sites if s["station"] == selected_station)
+    
+    # Optional: show latitude
+    latitude = next(s["latitude"] for s in sites if s["station"] == selected_station)
+    st.write(f"Latitude: {latitude}° N")
+    
 
     # atmospheric pressure the day of the profile
     atmospheric_pressure = st.number_input(
@@ -258,7 +279,7 @@ if uploaded_files:
                             ]
                         )
                         # writing the identified days with somlit profile
-                        st.write("RBR profiles identified (/outputs contains the figures):", os.listdir(proc_data_dir))
+                        st.write("RBR profiles identified start-stop datetimes (/outputs contains the figures):", os.listdir(proc_data_dir))
                         # writing the ouptput                                                                                                                                                                                                                                                                                                                                                                                                                                                                
                         zip_path = os.path.join(tmpdir, "processed_output.zip")
                         with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as zipf:

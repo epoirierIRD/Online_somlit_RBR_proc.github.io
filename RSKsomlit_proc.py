@@ -525,7 +525,7 @@ def procRSK(path_in, patm, site_id, p_tresh, c_tresh, param, path_out):
         # latitude of somlit point at Plouzané written below, comes from the
         # dictionnary sites.py
         rsk.derivedepth(
-            sites.site_latitudes[site_id], seawaterLibrary="TEOS-10"
+            sites.sites[site_id]["latitude"], seawaterLibrary="TEOS-10"
         )
 
         # derive velocity , calculate velocity from depth and time
