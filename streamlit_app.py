@@ -175,7 +175,7 @@ if uploaded_files:
     selected_station = st.selectbox(
         "SOMLIT Station",
         options=station_names,
-        index=station_names.index(st.session_state.selected_station),
+        # index=station_names.index(st.session_state.selected_station),
         key="selected_station"  # binds to session_state
     )
     
@@ -263,21 +263,27 @@ if uploaded_files:
                             patm=atmospheric_pressure,
                             p_tresh=pressure_threshold,
                             c_tresh=conductivity_threshold,
-                            param=[
-                                'conductivity',
-                                'temperature',
-                                'temperature1',
-                                'dissolved_o2_concentration',
-                                'par',
-                                'ph',
-                                'chlorophyll-a',
-                                'fdom',
-                                'turbidity',
-                                'depth',
-                                'salinity',
-                                'density_anomaly'
-                            ]
-                        )
+                            param=['conductivity',
+                                    'temperature',
+                                    #'pressure',
+                                    'temperature1',
+                                    'dissolved_o2_concentration',
+                                    'par',
+                                    'ph',
+                                    'chlorophyll-a',
+                                    'fdom',
+                                    'turbidity',
+                                    # 'sea_pressure',
+                                    'depth',
+                                    'salinity',
+                                    # 'speed_of_sound',
+                                    # 'specific_conductivity',
+                                    # 'dissolved_o2_saturation',
+                                    # 'velocity',
+                                    'density_anomaly',
+                                    'dissolved_o2_compensated',
+                                    'temperature1_compensated'
+                                    ] )
                         # writing the identified days with somlit profile
                         st.write("RBR profiles identified start-stop datetimes (/outputs contains the figures):", os.listdir(proc_data_dir))
                         # writing the ouptput                                                                                                                                                                                                                                                                                                                                                                                                                                                                
@@ -325,25 +331,27 @@ if uploaded_files:
                             patm = 10.1325,
                             p_tresh = 0.4, #0.4 for multiple rsk // 0.05 for simple profile
                             c_tresh = 5, #5 for multiple rsk // 0.5 for simple profile
-                            param = ['conductivity',
-                                  'temperature',
-                                  #'pressure',
-                                  'temperature1',
-                                  'dissolved_o2_concentration',
-                                  'par',
-                                  'ph',
-                                  'chlorophyll-a',
-                                  'fdom',
-                                  'turbidity',
-                                  # 'sea_pressure',
-                                  'depth',
-                                  'salinity',
-                                  # 'speed_of_sound',
-                                  # 'specific_conductivity',
-                                  # 'dissolved_o2_saturation',
-                                  # 'velocity',
-                                  'density_anomaly'
-                                  ] )
+                            param=['conductivity',
+                                    'temperature',
+                                    #'pressure',
+                                    'temperature1',
+                                    'dissolved_o2_concentration',
+                                    'par',
+                                    'ph',
+                                    'chlorophyll-a',
+                                    'fdom',
+                                    'turbidity',
+                                    # 'sea_pressure',
+                                    'depth',
+                                    'salinity',
+                                    # 'speed_of_sound',
+                                    # 'specific_conductivity',
+                                    # 'dissolved_o2_saturation',
+                                    # 'velocity',
+                                    'density_anomaly',
+                                    'dissolved_o2_compensated',
+                                    'temperature1_compensated'
+                                    ] )
                         st.write("SOMLIT days identified _YYYYMMDD.rsk (/outputs contains profiles data and figures):", os.listdir(proc_data_dir))
                         # preparing the zip export
                         zip_path = os.path.join(tmpdir, "processed_output.zip")
